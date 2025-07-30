@@ -265,52 +265,68 @@ const Change = {
     show() {
         const xbsFileInput = document.getElementById("xbsFile");
         const file = xbsFileInput.files[0];
-    
+
         if (!file) {
-            alert("Please select an XBS file");
+            alert("请选择一个XBS格式文件");
             return;
         }
-    
+
         const reader = new FileReader();
         reader.onload = function (e) {
             const data = new Uint8Array(e.target.result);
             try {
                 const json = xbsTools.XBS2Json(data);
-                let  jsondata=byteTools.uint8Array2JsonObj(json)
+                let jsondata = byteTools.uint8Array2JsonObj(json)
                 const outputDiv = document.getElementById("output");
-            if (!outputDiv) {
-                console.error("Element with ID 'output' not found.");
-                return;
-            }
-            while (outputDiv.firstChild) {
-                outputDiv.removeChild(outputDiv.firstChild);
-            }
-            for (const key in jsondata) {
-                let info=jsondata[key].password
-                 // 检查 password 是否存在且不为空
-                if (info === undefined || info === null || info === "") {
-                    info = "无密码";
+                if (!outputDiv) {
+                    console.error("Element with ID 'output' not found.");
+                    return;
+                }
+                while (outputDiv.firstChild) {
+                    outputDiv.removeChild(outputDiv.firstChild);
+                }
+                for (const key in jsondata) {
+                    let info = jsondata[key].password
+                    // 检查 password 是否存在且不为空
+                    if (info === undefined || info === null || info === "") {
+                        info = "无密码";
+                    }
+                    const p = document.createElement("div");
+                    p.addEventListener('click', () => {
+                        const textarea = document.createElement('textarea');
+                        textarea.value = info;
+                        if (info !== "无密码") {
+                            document.body.appendChild(textarea);
+                            textarea.select();
+
+                            try {
+                                const successful = document.execCommand('copy');
+                                if (successful) {
+                                    alert('密码：' + info + '\n已经复制到剪贴板');
+                                } else {
+                                    alert('复制到剪贴板失败');
+                                }
+                            } catch (err) {
+                                alert('复制到剪贴板失败');
+                                console.error('复制到剪贴板失败: ', err);
+                            }
+
+                            document.body.removeChild(textarea);
+                        } else {
+                            alert(info);
+                        }
+
+                    });
+                    p.textContent = `${key}`;
+                    outputDiv.appendChild(p);
                 }
 
-                const p = document.createElement("div");
-                p.addEventListener('click', () => {
-                    navigator.clipboard.writeText(info).then(() => {
-                        alert('Password copied to clipboard');
-                    }, (err) => {
-                        alert('Failed to copy text: ', err);
-                    });
-                });
-                p.textContent = `name:${key}`;
-                p.style.whiteSpace = 'pre'; 
-                outputDiv.appendChild(p);
-            }
-           
-           
-               
-            
+
+
+
             } catch (error) {
-                console.error("Error converting XBS to JSON:", error);
-                alert("Error converting XBS to JSON");
+                console.error("转换错误 XBS to JSON:", error);
+                alert("转换错误 XBS to JSON");
             }
         };
         reader.readAsArrayBuffer(file);
@@ -330,15 +346,17 @@ const Change = {
 
             try {
                 const xbs = xbsTools.Json2XBS(data);
-                const xbsBlob = new Blob([xbs], { type: "application/octet-stream" });
+                const xbsBlob = new Blob([xbs], {
+                    type: "application/octet-stream"
+                });
                 const downloadLink = document.createElement("a");
                 // 保留原文件名，仅更改扩展名为 .xbs
-                downloadLink.download = `${file.name.replace(/\.json$/, '')}.xbs`;
                 downloadLink.href = URL.createObjectURL(xbsBlob);
+                downloadLink.download = `${file.name.replace(/\.json$/, '')}.xbs`;
                 downloadLink.click();
             } catch (error) {
-                console.error("Error converting JSON to XBS:", error);
-                alert("Error converting JSON to XBS");
+                console.error("转换错误 JSON to XBS:", error);
+                ("转换错误 JSON to XBS");
             }
         };
         reader.readAsArrayBuffer(file);
@@ -346,76 +364,216 @@ const Change = {
     convertXbsToJson() {
         const xbsFileInput = document.getElementById("xbsFile");
         const file = xbsFileInput.files[0];
-    
+
         if (!file) {
-            alert("Please select an XBS file");
+            ("Please select an XBS file");
             return;
         }
-    
+
         const reader = new FileReader();
         reader.onload = function (e) {
             const data = new Uint8Array(e.target.result);
             try {
                 const json = xbsTools.XBS2Json(data);
-                const jsonBlob = new Blob([json], { type: "application/json" });
+                const jsonBlob = new Blob([json], {
+                    type: "application/json"
+                });
                 const downloadLink = document.createElement("a");
                 downloadLink.download = `${file.name.replace(/\.xbs$/, '')}.json`;
                 downloadLink.href = URL.createObjectURL(jsonBlob);
                 downloadLink.click();
-            
+
             } catch (error) {
-                console.error("Error converting XBS to JSON:", error);
-                alert("Error converting XBS to JSON");
+                console.error("转换错误 XBS to JSON:", error);
+                ("转换错误 XBS to JSON");
             }
         };
         reader.readAsArrayBuffer(file);
     },
     convertFileBasedOnExtension() {
-        const fileInput = document.getElementById(`xbsFile`);
+        const fileInput = document.getElementById('xbsFile');
         const file = fileInput.files[0];
-    
+
         if (!file) {
-            alert("Please select a file");
+            ("Please select a file");
             return;
         }
-    
+
+        if (!window.FileReader || !window.Blob || !window.URL || !URL.createObjectURL) {
+            ("Your browser does not support the required features.");
+            return;
+        }
+
         const reader = new FileReader();
         reader.onload = function (e) {
             const data = new Uint8Array(e.target.result);
-            const extension = getFileExtension(file.name);
-            console.log(file.name)
-            function getFileExtension(filename) {
-                return filename.slice((filename.lastIndexOf(".") - 1 >>> 0) + 2);
-            }
+            const extension = file.name.split('.').pop().toLowerCase();
+
             try {
-                let result;
-                let name;
+                let blob, downloadLink, fileName;
+
                 if (extension === 'json') {
-                    result = xbsTools.Json2XBS(data);
-                    name="xbs"
+                    const xbs = xbsTools.Json2XBS(data);
+                    blob = new Blob([xbs], { type: "application/octet-stream" });
+                    fileName = file.name.replace(/\.json$/, '') + '.xbs';
                 } else if (extension === 'xbs') {
-                    result = xbsTools.XBS2Json(data);
-                    name="json"
+                    const json = xbsTools.XBS2Json(data);
+                    blob = new Blob([json], { type: "application/json" });
+                    fileName = file.name.replace(/\.xbs$/, '') + '.json';
                 } else {
                     throw new Error('Unsupported file format');
                 }
-    
-                const mimeType = extension === 'json' ? 'application/json' : 'application/octet-stream';
-                const blob = new Blob([result], { type: mimeType });
-                const downloadLink = document.createElement("a");
-    
-                // 保留原文件名，仅更改扩展名
-                downloadLink.download = `${file.name.replace(/\.[^.]+$/, '')}.${name}`;
+
+                downloadLink = document.createElement("a");
                 downloadLink.href = URL.createObjectURL(blob);
+                downloadLink.download = fileName;
+
+                // Append link to the body for compatibility with some browsers
+                document.body.appendChild(downloadLink);
+
+                // Trigger a click on the link
                 downloadLink.click();
-    
+
+                // Clean up
+                document.body.removeChild(downloadLink);
+                URL.revokeObjectURL(downloadLink.href);
+
             } catch (error) {
-                console.error(`Error converting file:`, error);
-                alert(`Error converting file: ${error.message}`);
+                console.error(`Conversion error:`, error);
+                alert(`Conversion error: ${error.message}`);
+            }
+        };
+
+        reader.onerror = function (error) {
+            console.error(`File read error:`, error);
+            alert(`File read error: ${error.message}`);
+        };
+
+        reader.readAsArrayBuffer(file);
+
+
+
+
+
+    },
+    fenge() {
+        const jsonFileInput = document.getElementById("xbsFile");
+        const file = jsonFileInput.files[0];
+
+        if (!file) {
+            alert("Please select a JSON file");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const data = new Uint8Array(e.target.result);
+            try {
+                const json = xbsTools.XBS2Json(data);
+                let jsondata = byteTools.uint8Array2JsonObj(json);
+
+                // 确保 jsondata 是一个对象
+                if (typeof jsondata !== 'object' || jsondata === null) {
+                    console.error("JSON 数据格式不正确");
+                    return;
+                }
+
+                Object.keys(jsondata).forEach(key => {
+                    setTimeout(() => {
+                        try {
+                            // 构建新的 JSON 对象
+                            const dd = {};
+                            dd[key] = jsondata[key];
+                            const jsonString = JSON.stringify(dd);
+                            const blob = new Blob([jsonString], { type: 'application/json' });
+
+                            // 创建并配置 FileReader 对象
+                            const reader = new FileReader();
+                            reader.onload = function (e) {
+                                const arrayBuffer = e.target.result;
+                                const data = new Uint8Array(arrayBuffer);
+                                const xbs = xbsTools.Json2XBS(data);
+                                console.log(`${key} 转换为 XBS 结束`);
+                                // 创建 XBS Blob 并下载文件
+                                const xbsBlob = new Blob([xbs], {
+                                    type: "application/octet-stream"
+                                });
+                                const downloadLink = document.createElement("a");
+                                downloadLink.href = URL.createObjectURL(xbsBlob);
+                                downloadLink.download = `${key}.xbs`;
+                                downloadLink.click();
+
+                                // 清理 URL 对象
+                                URL.revokeObjectURL(downloadLink.href);
+                            };
+
+                            // 开始读取 Blob 数据
+                            reader.readAsArrayBuffer(blob);
+                        } catch (error) {
+                            console.error(`转换错误 JSON to XBS (${key}):`, error);
+                        }
+                    }, 1000 * Object.keys(jsondata).indexOf(key)); // 每个 JSON 对象之间延迟 3 秒
+                });
+            } catch (error) {
+                console.error("转换错误 JSON to XBS:", error);
             }
         };
         reader.readAsArrayBuffer(file);
+    },
+    clean() {
+        const xbsFileInput = document.getElementById("xbsFile");
+        const file = xbsFileInput.files[0];
+
+        if (!file) {
+            alert("请选择一个XBS格式文件");
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            const data = new Uint8Array(e.target.result);
+            try {
+                const json = xbsTools.XBS2Json(data);
+                let jsondata = byteTools.uint8Array2JsonObj(json)
+                for (const key in jsondata) {
+                    let info = jsondata[key]
+                    delete info["password"]
+                }
+                const jsonString = JSON.stringify(jsondata);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                // 创建并配置 FileReader 对象
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const arrayBuffer = e.target.result;
+                    const data = new Uint8Array(arrayBuffer);
+                    const xbs = xbsTools.Json2XBS(data);
+                    console.log(`转换为 XBS 结束`);
+                    // 创建 XBS Blob 并下载文件
+                    const xbsBlob = new Blob([xbs], {
+                        type: "application/octet-stream"
+                    });
+                    const downloadLink = document.createElement("a");
+                    downloadLink.href = URL.createObjectURL(xbsBlob);
+                    downloadLink.download = `${file.name}`;
+                    downloadLink.click();
+
+                    // 清理 URL 对象
+                    URL.revokeObjectURL(downloadLink.href);
+                };
+
+                // 开始读取 Blob 数据
+                reader.readAsArrayBuffer(blob);
+
+
+
+            } catch (error) {
+                console.error("转换错误 XBS to JSON:", error);
+                alert("转换错误 XBS to JSON");
+            }
+        };
+        reader.readAsArrayBuffer(file);
+    },
+    addMima() {
+        alert("添加成功")
     }
-    
-    
 };

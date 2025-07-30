@@ -1,66 +1,77 @@
 body {
-    padding: 0px;
     margin: 0px;
-    background-color: #fffcea;
+    padding: 0px;
+    position: relative;
+    background-color: #bde2c6;
 }
+
 h1 {
     text-align: center;
     font: 3em sans-serif;
 }
-.box {
-   height: 60%;
-   color: #000;
-   text-align: center;
-   background-color: #eafdff;
-   align-items: stretch;
-   min-height: 70%; /* 或者其他高度 */
-   min-width: 500px;
-   /* border: 1px solid #000;  */
+
+
+#xbsFile {
+    display: none;
 }
-.file-upload{
-    height: 300px;
-    width: 100%;
-    text-align: center;
-    overflow: hidden;
-}
-.isd {
-    background-color: #8a93942f;
-    height: 200px;
-    padding: 3em;
-    padding-top: 10px;
-    margin-left: 20%;
-    margin-right: 20%;
-    border: 1px;
-    border-radius: 30px;
-}
-.file-upload svg {
+#uploadArea input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: transparent;
+    cursor: inherit;
+    z-index: 1;
+  }
+svg {
     width: 100px;
     height: 100px;
     color: #0ad6fa;
     padding: 20px;
 }
-.p1 {
-    margin: 0;
-    padding: 0;
-    font-size: 20px;
-    color: black;
+
+.box {
+    position: absolute;
+    top: 260px;
+    left: 50%;
+    width: 50%;
+    height: 300px;
+    transform: translate(-50%, -50%);
+}
+#uploadArea {
+    border: 1px;
+    border-radius: 30px;
+    height: 400px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 60px;
+    color: #00daf2;
+    cursor: pointer;
+    background-color: #f8f9fa;
 }
 
 .bt{
-    border-radius: 4px;
-    margin: 12px;
+    /* border-radius: 4px; */
+    /* margin: 12px; */
+    text-align: center;
 }
-.bt button {
-    width: 100px;
-    background-color: #45c7e1;
-    border: 0px;
-    border-radius: 12px;
-    margin: 10px;
-    height: 50px;
-    color: rgba(203, 18, 176, 0.857);
+.p1 {
+    margin: 0;
+    padding: 0;
+    font-size: 30px;
+    /* color: black; */
 }
 #output {
-    margin: 0;
+    margin: 500px 0 0 0;
     padding: 0;
     display: flex;
     color: black;
@@ -81,35 +92,86 @@ h1 {
     align-items: center;
     overflow: hidden;
 }
-/* @media screen and (min-width: 800px) {
-    #output div {
-        width:fit-content;
-        background-color: antiquewhite;
+.bt button {
+    width: 100px;
+    background-color: #45c7e1;
+    border: 0px;
+    border-radius: 12px;
+    margin: 30px 20px 0px 20px;
+    height: 60px;
+    color: rgba(203, 18, 176, 0.857);
+    font-size: 20px;
+}
+@media only screen and (max-width: 767px) and (min-width: 320px){
+    .bt button {
+        width: 70px;
+        background-color: #45c7e1;
         border: 0px;
-        border-radius: 20px;
-        justify-content: center;
-        margin: 10px;
-        align-items: center;
-        overflow: hidden;
+        border-radius: 12px;
+        margin: 10px 2px 0px 2px;
+        height: 30px;
+        color: rgba(203, 18, 176, 0.857);
+        font-size: 10px;
     }
-  } */
-  .file-upload {
-    position: relative;
-    display: inline-block;
-    overflow: hidden;
-  }
-  .file-upload input[type=file] {
-    position: absolute;
-    top: 0;
-    right: 0;
-    min-width: 100%;
-    min-height: 100%;
-    font-size: 100px;
-    text-align: right;
-    filter: alpha(opacity=0);
-    opacity: 0;
-    outline: none;
-    background: transparent;
-    cursor: inherit;
-    z-index: 1;
-  }
+    #uploadArea {
+        border: 1px;
+        border-radius: 30px;
+        height: 150px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 16px;
+        color: #0ad6fa;
+        cursor: pointer;
+        background-color: #f8f9fa;
+    }
+    .p1 {
+        margin: 0;
+        padding: 0;
+        font-size: 10px;
+        /* color: black; */
+    }
+    svg {
+        width: 50px;
+        height: 50px;
+        color: #0ad6fa;
+        padding: 20px;
+    }
+}
+
+
+@media only screen and (max-width: 1366px) and (min-width: 768px) {
+    .bt button {
+        width: 70px;
+        background-color: #45c7e1;
+        border: 0px;
+        border-radius: 12px;
+        margin: 30px 5px 0px 5px;
+        height: 50px;
+        color: rgba(203, 18, 176, 0.857);
+        font-size: 10px;
+    }
+    #uploadArea {
+        border: 1px;
+        border-radius: 30px;
+        height: 300px;
+        width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        font-size: 16px;
+        color: #007bff;
+        cursor: pointer;
+        background-color: #f8f9fa;
+    }
+    .p1 {
+        margin: 0;
+        padding: 0;
+        font-size: 30px;
+        color: #0ad6fa;
+    }
+    
+}

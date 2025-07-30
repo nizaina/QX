@@ -1,0 +1,106 @@
+body {
+    margin: 0px;
+    padding: 0px;
+    height: 100vh;
+    /* 使 body 高度为视口高度 */
+    position: relative;
+    /* 使子元素的绝对定位相对于 body */
+    background-color: #bde2c6;
+}
+
+h1 {
+    text-align: center;
+    font: 3em sans-serif;
+}
+
+#uploadArea {
+    border: 1px;
+    border-radius: 30px;
+    height: 300px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    font-size: 16px;
+    color: #007bff;
+    cursor: pointer;
+    background-color: #f8f9fa;
+}
+
+#xbsFile {
+    display: none;
+}
+#uploadArea input[type=file] {
+    position: absolute;
+    top: 0;
+    right: 0;
+    min-width: 100%;
+    min-height: 100%;
+    font-size: 100px;
+    text-align: right;
+    filter: alpha(opacity=0);
+    opacity: 0;
+    outline: none;
+    background: transparent;
+    cursor: inherit;
+    z-index: 1;
+  }
+svg {
+    width: 100px;
+    height: 100px;
+    color: #0ad6fa;
+    padding: 20px;
+}
+
+.box {
+    position: absolute;
+    top: 260px;
+    left: 50%;
+    width: 50%;
+    height: 300px;
+    transform: translate(-50%, -50%);
+}
+
+.p1 {
+    margin: 0;
+    padding: 0;
+    font-size: 20px;
+    color: black;
+}
+.bt{
+    border-radius: 4px;
+    margin: 12px;
+    text-align: center;
+}
+.bt button {
+    width: 100px;
+    background-color: #45c7e1;
+    border: 0px;
+    border-radius: 12px;
+    margin: 10px;
+    height: 50px;
+    color: rgba(203, 18, 176, 0.857);
+}
+#output {
+    margin: 500px 0 0 0;
+    padding: 0;
+    display: flex;
+    color: black;
+    text-align: center;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-around;
+    align-items: center;
+    flex-direction: row;
+}
+#output div {
+    width: 200px;
+    background-color: antiquewhite;
+    border: 0px;
+    border-radius: 20px;
+    justify-content: center;
+    margin: 10px;
+    align-items: center;
+    overflow: hidden;
+}
